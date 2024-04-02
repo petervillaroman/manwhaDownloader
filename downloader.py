@@ -76,7 +76,7 @@ def main():
     if not os.path.exists(pdf_directory):  # Ensure the PDF directory exists
         os.makedirs(pdf_directory)
 
-    for chapter in range(45, 48):  # Adjust the range as necessary
+    for chapter in range(1, 201):  # Adjust the range as necessary
         download_chapter_images(chapter, base_url, save_directory)
         chapter_path = os.path.join(save_directory, f"Chapter_{chapter}")
         # Save PDFs in the new directory
