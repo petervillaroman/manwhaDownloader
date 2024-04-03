@@ -1,3 +1,4 @@
+import re
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -37,15 +38,20 @@ def download_chapter_to_pdf(chapter_number, base_url, pdf_directory):
     soup = BeautifulSoup(response.text, 'html.parser')
 
     images_data = []
+    image_elements = soup.find_all('img', src=True)
 
-    if chapter_number < 110:
-        image_elements = soup.find_all('img', {'class': 'ts-main-image'})
-    else:
-        # Adapt to the new structure after chapter 110
-        image_elements = soup.find_all(
-            'img', src=True, alt="asura scans manhwa comic")
+    # Regular expression to match the specific pattern of your target images
+    pattern = re.compile(
+        r'https://asuratoon\.com/wp-content/uploads/2021/03/\d+-\d+\.jpg')
 
-    for img in image_elements:
+    # Filter images that match the pattern
+    filtered_image_elements = [
+        img for img in image_elements if pattern.match(img['src'])]
+
+    print(
+        f"Found {len(filtered_image_elements)} matching images for Chapter {chapter_number}.")
+
+    for img in filtered_image_elements:
         image_url = img['src'].strip()
         image_data = download_image_to_memory(image_url)
         if image_data:
@@ -64,8 +70,8 @@ def main():
 
     if not os.path.exists(pdf_directory):
         os.makedirs(pdf_directory)
-
-    for chapter in range(110, 115):  # Adjust as necessary
+        print(f"Created directory at {pdf_directory}")
+    for chapter in range(110, 201):  # Adjust as necessary
         download_chapter_to_pdf(chapter, base_url, pdf_directory)
 
 
